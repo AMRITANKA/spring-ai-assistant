@@ -1,0 +1,20 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  flyway:
+    enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+assistant:
+  security:
+    permit-actuator: true
+
+logging:
+  level:
+    dev.amritanka.assistant: DEBUG
+    org.springframework.ai: DEBUG

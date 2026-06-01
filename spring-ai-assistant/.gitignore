@@ -1,0 +1,11 @@
+target/
+.idea/
+.vscode/
+*.iml
+*.log
+.env
+.env.*
+HELP.md
+.mvn/
+mvnw
+mvnw.cmd

@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: spring-ai-assistant
+
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/assistant}
+    username: ${POSTGRES_USER:assistant}
+    password: ${POSTGRES_PASSWORD:assistant}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Azure AD / Entra ID issuer, e.g.
+          # https://login.microsoftonline.com/<tenant-id>/v2.0
+          issuer-uri: ${AAD_ISSUER_URI:}
+
+  ai:
+    azure:
+      openai:
+        api-key: ${AZURE_OPENAI_API_KEY:}
+        endpoint: ${AZURE_OPENAI_ENDPOINT:}
+        chat:
+          options:
+            deployment-name: ${AZURE_OPENAI_CHAT_DEPLOYMENT:gpt-4o}
+            temperature: 0.3
+        embedding:
+          options:
+            deployment-name: ${AZURE_OPENAI_EMBED_DEPLOYMENT:text-embedding-3-large}
+
+    vectorstore:
+      pgvector:
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 3072            # text-embedding-3-large
+        initialize-schema: true
+
+assistant:
+  memory:
+    window-size: 12
+  security:
+    permit-actuator: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    dev.amritanka.assistant: INFO
+    org.springframework.ai: INFO
+  pattern:
+    level: "%5p [%X{traceId:-},%X{spanId:-}]"
+
+server:
+  port: 8080
+  shutdown: graceful
